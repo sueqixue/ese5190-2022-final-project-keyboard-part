@@ -33,21 +33,21 @@ def file_dataset_from_directory(data_path, data_type):
 	data = []
 	label = []
 
-  for name in class_names:
-    # print(name)
-    data_dir = data_path / pathlib.Path(name)
-	for filename in os.listdir(data_dir):
-		file_dir = os.path.join(data_dir, filename)
-		# checking if it is a file
-		if os.path.isfile(file_dir):
-			# print(file_dir)
-			with open(file_dir, "r") as f:
-				content = f.read()
+	for name in class_names:
+		# print(name)
+		data_dir = data_path / pathlib.Path(name)
+		for filename in os.listdir(data_dir):
+			file_dir = os.path.join(data_dir, filename)
+			# checking if it is a file
+			if os.path.isfile(file_dir):
 				# print(file_dir)
-				content = resize_file_data(content)
-				data.append(content)
-				label.append(name)
-				# print(data)
+				with open(file_dir, "r") as f:
+					content = f.read()
+					# print(file_dir)
+					content = resize_file_data(content)
+					data.append(content)
+					label.append(name)
+					# print(data)
 
 	# Shuffle the data and label in the same order
 	idx = np.random.permutation(len(data))
