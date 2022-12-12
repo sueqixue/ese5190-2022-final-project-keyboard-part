@@ -48,7 +48,7 @@ def file_dataset_from_directory(data_path, data_type):
 					# print(file_dir)
 					content = resize_file_data(content)
 					data.append(content)
-					label.append(name)
+					label.append(int(ord(name)))
 					# print(data)
 
 	# Shuffle the data and label in the same order
