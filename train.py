@@ -48,6 +48,7 @@ def file_dataset_from_directory(data_path, data_type):
 					# print(file_dir)
 					content = resize_file_data(content)
 					data.append(content)
+					# data and label type should be the same
 					label.append(int(ord(name)))
 					# print(data)
 
