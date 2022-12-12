@@ -124,8 +124,15 @@ if __name__ == "__main__":
 	model.summary()
 
 	epochs = 10
+	# fit model
 	history = model.fit(
-	 	train_ds,
-		validation_data = val_ds,
-		epochs = epochs
+		train_ds,
+		train_label,
+		validation_data = (val_ds, val_label),
+		epochs = epochs,
+		batch_size = 2
 	)
+	
+	# evaluate model
+	_, acc = model.evaluate(val_ds, val_label, verbose=0)
+	print('> %.3f' % (acc * 100.0))
