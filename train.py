@@ -70,8 +70,11 @@ def file_dataset_from_directory(data_path, data_type):
 			# print(f'data_index = {data_index}')
 			this_data_batch[data_num] = data_shuffled[data_index]
 			this_label_batch[data_num] = label_shuffled[data_index]
-	data_input.append(tf.convert_to_tensor(this_data_batch, dtype=tf.float32))
-	label_input.append(tf.convert_to_tensor(this_data_batch))
+		data_input.append(this_data_batch)
+		label_input.append(this_label_batch)
+
+	data_input = tf.convert_to_tensor(data_input, dtype=tf.float32)
+	label_input = tf.convert_to_tensor(label_input)
 
 	print(data_type + "_total_data_length:" + str(length)) 
 	return data_input, label_input, length
@@ -132,7 +135,7 @@ if __name__ == "__main__":
 		epochs = epochs,
 		batch_size = 2
 	)
-	
+
 	# evaluate model
 	_, acc = model.evaluate(val_ds, val_label, verbose=0)
 	print('> %.3f' % (acc * 100.0))
