@@ -9,15 +9,14 @@ import random
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
-
 from os.path import exists
 from google.colab import files
 
 BATCH_SIZE = 2
-input_height = 32
-input_width = 32
+INPUT_HEIGHT = 32
+INPUT_WIDTH = 32
 input_channel = 3
-
+NUM_CLASSES = 36
 
 def resize_file_data(data):
 	data_flattened = data.split(', ')
@@ -25,7 +24,7 @@ def resize_file_data(data):
 	data_flattened[i] = int(data_flattened[i])
 	# countOfData = len(data_flattened)
 	# print(countOfData)
-	data = np.resize(data_flattened, (input_height, input_width, input_channel))
+	data = np.resize(data_flattened, (INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNEL))
 	# print(data)
 	return data
 
@@ -59,16 +58,44 @@ def file_dataset_from_directory(data_path, data_type):
 	# print(label)
 	# print(label_shuffled)
 
-	# TODO: Batch the data by batch_size
-	data_shuffled = tf.convert_to_tensor(data_shuffled, dtype=tf.float32)
-	print(data_shuffled)
+	# Batch the data by BATCH_SIZE to format 4D tensor as input data
+	dataset_len = int(length / BATCH_SIZE) # For training: 72 = 144 / 2
+	print(f'dataset_len = {dataset_len}')
+	for count in range(dataset_len):
+		this_data_batch = [None] * BATCH_SIZE
+		this_label_batch = [None] * BATCH_SIZE
+		for data_num in range(BATCH_SIZE):
+			# print(f"data_num = {data_num}")
+			data_index = count * BATCH_SIZE + data_num
+			# print(f'data_index = {data_index}')
+			this_data_batch[data_num] = data_shuffled[data_index]
+			this_label_batch[data_num] = label_shuffled[data_index]
+	data_input.append(tf.convert_to_tensor(this_data_batch, dtype=tf.float32))
+	label_input.append(tf.convert_to_tensor(this_data_batch))
 
-	label_shuffled = tf.convert_to_tensor(label_shuffled)
-	print(label_shuffled)
+	print(data_type + "_total_data_length:" + str(length)) 
+	return data_input, label_input, length
 
-	print(data_type + "_data_length:" + str(length))   
-	return data_shuffled, label_shuffled, length
+# Define a simple sequential model
+def create_model():
+	model = tf.keras.Sequential([
+		layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNEL)),
+		layers.MaxPooling2D(),
+		layers.Dropout(0.1),
+		layers.Conv2D(32, 3, padding='same', activation='relu'),
+		layers.MaxPooling2D(),
+		layers.Dropout(0.1),
+		layers.Flatten(),
+		layers.Dense(128, activation='relu'),
+		layers.Dropout(0.1),
+		layers.Dense(NUM_CLASSES, activation="softmax")
+	])
 
+	model.compile(optimizer='adam',
+		loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+		metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
+
+	return model
 
 if __name__ == "__main__":
 	train_dir = './Users/xue_q/Downloads/keyboard_dataset/train'
@@ -82,6 +109,9 @@ if __name__ == "__main__":
 
 	class_names = np.array([item.name for item in train_dir.glob('*')])
 	num_classes = len(class_names)
+	if num_classes != NUM_CLASSES:
+		print("Warning: Wrong classes number!")
+		exit()
 	# print(class_names)
 	# print(num_classes)
 
@@ -93,7 +123,7 @@ if __name__ == "__main__":
 	model = create_model()
 	model.summary()
 
-	epochs=10
+	epochs = 10
 		history = model.fit(
 	 	train_ds,
 		validation_data = val_ds,
