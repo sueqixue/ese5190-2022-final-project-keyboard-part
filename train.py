@@ -141,6 +141,9 @@ if __name__ == "__main__":
 		epochs = epochs
 	)
 
+	# Save model
+	model.save('./my_model')
+
 	# evaluate model
 	_, acc = model.evaluate(val_ds, val_label, verbose=0)
 	print('> %.3f' % (acc * 100.0))
