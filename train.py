@@ -124,7 +124,7 @@ if __name__ == "__main__":
 	model.summary()
 
 	epochs = 10
-		history = model.fit(
+	history = model.fit(
 	 	train_ds,
 		validation_data = val_ds,
 		epochs = epochs
