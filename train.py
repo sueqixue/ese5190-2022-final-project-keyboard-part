@@ -15,7 +15,7 @@ from google.colab import files
 
 BATCH_SIZE = 2
 input_height = 32
-input_width= 32
+input_width = 32
 input_channel = 3
 
 
