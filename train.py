@@ -32,6 +32,8 @@ def file_dataset_from_directory(data_path, data_type):
 	# Get train, valid and test data from files
 	data = []
 	label = []
+	my_dataset_data = []
+  my_dataset_label = []
 
 	for name in class_names:
 		# print(name)
@@ -59,8 +61,8 @@ def file_dataset_from_directory(data_path, data_type):
 	# print(label_shuffled)
 
 	# Batch the data by BATCH_SIZE to format 4D tensor as input data
-	dataset_len = int(length / BATCH_SIZE) # For training: 72 = 144 / 2
-	print(f'dataset_len = {dataset_len}')
+	dataset_len = int(length / BATCH_SIZE)
+	# print(f'dataset_len = {dataset_len}')
 	for count in range(dataset_len):
 		this_data_batch = [None] * BATCH_SIZE
 		this_label_batch = [None] * BATCH_SIZE
@@ -70,14 +72,17 @@ def file_dataset_from_directory(data_path, data_type):
 			# print(f'data_index = {data_index}')
 			this_data_batch[data_num] = data_shuffled[data_index]
 			this_label_batch[data_num] = label_shuffled[data_index]
-		data_input.append(this_data_batch)
-		label_input.append(this_label_batch)
 
-	data_input = tf.convert_to_tensor(data_input, dtype=tf.float32)
-	label_input = tf.convert_to_tensor(label_input)
+		this_data_batch = tf.convert_to_tensor(this_data_batch)
+		this_data_batch = tf.reshape(this_data_batch, [BATCH_SIZE, INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNEL])
+		my_dataset_data.append(this_data_batch)
 
-	print(data_type + "_total_data_length:" + str(length)) 
-	return data_input, label_input, length
+		this_label_batch = tf.convert_to_tensor(this_label_batch)
+		this_label_batch = tf.reshape(this_label_batch, [BATCH_SIZE])
+		my_dataset_label.append(this_label_batch)
+
+	print(data_type + "_total_data_length: " + str(length)) 
+	return my_dataset_data, my_dataset_label, length
 
 # Define a simple sequential model
 def create_model():
@@ -128,12 +133,11 @@ if __name__ == "__main__":
 
 	epochs = 10
 	# fit model
-	history = model.fit(
+	his = model.fit(
 		train_ds,
 		train_label,
 		validation_data = (val_ds, val_label),
-		epochs = epochs,
-		batch_size = 2
+		epochs = epochs
 	)
 
 	# evaluate model
