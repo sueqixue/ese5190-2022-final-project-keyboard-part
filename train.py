@@ -15,7 +15,7 @@ from google.colab import files
 BATCH_SIZE = 2
 INPUT_HEIGHT = 32
 INPUT_WIDTH = 32
-input_channel = 3
+INPUT_CHANNEL = 3
 NUM_CLASSES = 36
 
 def resize_file_data(data):
