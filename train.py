@@ -40,7 +40,7 @@ def file_dataset_from_directory(data_path, data_type):
 		data_dir = data_path / pathlib.Path(name)
 		for filename in os.listdir(data_dir):
 			file_dir = os.path.join(data_dir, filename)
-			# checking if it is a file
+			# Checking if it is a file
 			if os.path.isfile(file_dir):
 				# print(file_dir)
 				with open(file_dir, "r") as f:
@@ -48,9 +48,16 @@ def file_dataset_from_directory(data_path, data_type):
 					# print(file_dir)
 					content = resize_file_data(content)
 					data.append(content)
-					# data and label type should be the same
-					label.append(int(ord(name)) - 55)
-					# print(data)
+					# Data and label type should be the same
+					# Modify the labels to 0-35
+					curr_label = int(ord(name))
+					# print(f'the old label of {name} is: {curr_label}')
+					if (curr_label > 57):
+						curr_label = curr_label - 55
+					else:
+						curr_label = curr_label - 48
+					label.append(curr_label)
+					# print(f'the new label of {name} is: {curr_label}')
 
 	# Shuffle the data and label in the same order
 	idx = np.random.permutation(len(data))
@@ -136,6 +143,7 @@ if __name__ == "__main__":
 	model = create_model()
 	model.summary()
 
+	# Train the model with epochs = 10
 	epochs = 10
 	# fit model
 	his = model.fit(
