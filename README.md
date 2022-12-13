@@ -19,7 +19,7 @@ In the magic_wand_ble code, it requires the type of the model input to be `kTfLi
 ### Model Size Issue
 The new model is about twice as big as the original model (original model: around 20000 parameters; our model: around 50000 parameters). Our system will out of memory after several times of writing.
 
-<img src="./images/out_of_memory_issue.png.png" alt="Memory_Issue" width="600"/>
+<img src="./images/out_of_memory_issue.png" alt="Memory_Issue" width="600"/>
 
 ## Notes
 Add this at the beginning of model.cc:
