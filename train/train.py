@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
 	# Save the tflite model
 	with open('model.tflite', 'wb') as f:
-	f.write(tflite_model)
+		f.write(tflite_model)
 
 	# Convert the tflite model to binary: use command xxd -i model.tflite > model_data.cc
 
