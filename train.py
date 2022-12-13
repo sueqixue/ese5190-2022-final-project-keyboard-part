@@ -144,7 +144,7 @@ if __name__ == "__main__":
 	model.summary()
 
 	# Train the model with epochs
-	epochs = 10
+	epochs = 50
 	# fit model
 	his = model.fit(
 		train_ds,
