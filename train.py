@@ -33,7 +33,7 @@ def file_dataset_from_directory(data_path, data_type):
 	data = []
 	label = []
 	my_dataset_data = []
-  my_dataset_label = []
+	my_dataset_label = []
 
 	for name in class_names:
 		# print(name)
@@ -143,7 +143,7 @@ if __name__ == "__main__":
 	model = create_model()
 	model.summary()
 
-	# Train the model with epochs = 10
+	# Train the model with epochs
 	epochs = 10
 	# fit model
 	his = model.fit(
