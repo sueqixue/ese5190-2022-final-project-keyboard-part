@@ -14,7 +14,7 @@ The accuracy of our model after 50 epochs training:
 ### Data Type Issue
 In the magic_wand_ble code, it requires the type of the model input to be `kTfLiteInt8 = 9`. We specified the data type of our dataset as `int8` when we converting data to tensor `tf.convert_to_tensor(this_data_batch, dtype=tf.int8)`. However, we load the pre-trained model to the magic_wand_ble system, it shows that the model input data type is still 'kTfLiteFloat32 = 1'. We do not know how to solve this yet.
 
-<img src="./images/keyboard_model_acc_epochs_50.png" alt="Data_Type_Issue" width="600"/>
+<img src="./images/data_type_issue.png" alt="Data_Type_Issue" width="600"/>
 
 ### Model Size Issue
 The new model is about twice as big as the original model (original model: around 20000 parameters; our model: around 50000 parameters). Our system will out of memory after several times of writing.
