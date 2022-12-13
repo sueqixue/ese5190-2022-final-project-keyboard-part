@@ -96,7 +96,7 @@ def file_dataset_from_directory(data_path, data_type):
 # Define a simple sequential model
 def create_model():
 	model = tf.keras.Sequential([
-		layers.Conv2D(8, 3, padding='same', activation='relu', input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNEL)),
+		layers.Conv2D(8, 5, padding='same', activation='relu', input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNEL)),
 		layers.MaxPooling2D((2, 2)),
 		layers.Dropout(0.5),
 		layers.Conv2D(16, 3, padding='same', activation='relu'),
@@ -104,7 +104,7 @@ def create_model():
 		layers.Dropout(0.5),
 		layers.Flatten(),
 		layers.Dense(128, activation='relu'),
-		layers.Dropout(0.5),
+		# layers.Dropout(0.5),
 		layers.Dense(NUM_CLASSES, activation="softmax")
 	])
 
