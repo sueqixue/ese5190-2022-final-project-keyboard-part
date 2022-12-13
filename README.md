@@ -1,18 +1,20 @@
 # ese5190-2022-final-project-keyboard-part
 
 ## Goal
-The original magic_wand_ble model can only classify between 0-9. We built our own network to classify between both 0-9 and A-Z, which means our model have 36 classes now.
+The original magic_wand_ble model can only classify between 0-9. We built our network to classify between both 0-9 and A-Z, which means our model has 36 classes now.
 
 ## Result
 Colab version of the training part: https://colab.research.google.com/drive/1JqMVoSU88o-7ZZmzwoQUtnsRRwZ0dx7c?usp=sharing
 
-The accuracy of our model after 50 epochs training:
+The accuracy of our model after 50 epochs of training:
 
 <img src="./images/keyboard_model_acc_epochs_50.png" alt="Accuracy" width="600"/>
 
 ## Issues
+We cannot find how the author, ArduCAM, of the [magic_wand_ble project](https://github.com/ArduCAM/pico-tflmicro/tree/main/examples/magic_wand_ble) train the original model. Thus, we built a classification network from scratch, referencing the network structure of [magic_wand project](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/magic_wand) of tflit.
+
 ### Data Type Issue
-In the magic_wand_ble code, it requires the type of the model input to be `kTfLiteInt8 = 9`. We specified the data type of our dataset as `int8` when we converting data to tensor `tf.convert_to_tensor(this_data_batch, dtype=tf.int8)`. However, we load the pre-trained model to the magic_wand_ble system, it shows that the model input data type is still 'kTfLiteFloat32 = 1'. We do not know how to solve this yet.
+In the magic_wand_ble code, it requires the type of the model input to be `kTfLiteInt8 = 9`. We specified the data type of our dataset as `int8` when we converted data to tensor `tf.convert_to_tensor(this_data_batch, dtype=tf.int8)`. However, we load the pre-trained model to the magic_wand_ble system, it shows that the model input data type is still `kTfLiteFloat32 = 1`. We do not know how to solve this yet.
 
 <img src="./images/data_type_issue.png" alt="Data_Type_Issue" width="600"/>
 
