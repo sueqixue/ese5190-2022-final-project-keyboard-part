@@ -8,7 +8,7 @@ Colab version of the training part: https://colab.research.google.com/drive/1JqM
 
 The accuracy of our model after 50 epochs of training:
 
-<img src="./images/keyboard_model_acc_epochs_50.jpg" alt="Accuracy" width="600"/>
+<img src="./images/keyboard_model_acc.jpg" alt="Accuracy" width="600"/>
 
 ## Issues
 We cannot find how the author, ArduCAM, of the [magic_wand_ble project](https://github.com/ArduCAM/pico-tflmicro/tree/main/examples/magic_wand_ble) train the original model. Thus, we built a classification network from scratch, referencing the network structure of [magic_wand project](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/magic_wand) of tflit.
