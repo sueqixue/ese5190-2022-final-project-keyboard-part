@@ -12,7 +12,7 @@ from tensorflow.keras.models import Sequential
 from os.path import exists
 from google.colab import files
 
-BATCH_SIZE = 2
+BATCH_SIZE = 8
 INPUT_HEIGHT = 32
 INPUT_WIDTH = 32
 INPUT_CHANNEL = 3
@@ -49,7 +49,7 @@ def file_dataset_from_directory(data_path, data_type):
 					content = resize_file_data(content)
 					data.append(content)
 					# data and label type should be the same
-					label.append(int(ord(name)))
+					label.append(int(ord(name)) - 55)
 					# print(data)
 
 	# Shuffle the data and label in the same order
@@ -71,14 +71,15 @@ def file_dataset_from_directory(data_path, data_type):
 			# print(f"data_num = {data_num}")
 			data_index = count * BATCH_SIZE + data_num
 			# print(f'data_index = {data_index}')
-			this_data_batch[data_num] = data_shuffled[data_index]
+			this_data_batch[data_num] = data_shuffled[data_index]/ 128
+			# this_data_batch[data_num] = this_data_batch[data_num].astype(int)
 			this_label_batch[data_num] = label_shuffled[data_index]
 
-		this_data_batch = tf.convert_to_tensor(this_data_batch)
+		this_data_batch = tf.convert_to_tensor(this_data_batch, dtype=tf.float32)
 		this_data_batch = tf.reshape(this_data_batch, [BATCH_SIZE, INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNEL])
 		my_dataset_data.append(this_data_batch)
 
-		this_label_batch = tf.convert_to_tensor(this_label_batch)
+		this_label_batch = tf.convert_to_tensor(this_label_batch, dtype=tf.int8)
 		this_label_batch = tf.reshape(this_label_batch, [BATCH_SIZE])
 		my_dataset_label.append(this_label_batch)
 
@@ -88,21 +89,21 @@ def file_dataset_from_directory(data_path, data_type):
 # Define a simple sequential model
 def create_model():
 	model = tf.keras.Sequential([
-		layers.Conv2D(16, 3, padding='same', activation='relu', input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNEL)),
-		layers.MaxPooling2D(),
-		layers.Dropout(0.1),
-		layers.Conv2D(32, 3, padding='same', activation='relu'),
-		layers.MaxPooling2D(),
-		layers.Dropout(0.1),
+		layers.Conv2D(8, 3, padding='same', activation='relu', input_shape=(INPUT_HEIGHT, INPUT_WIDTH, INPUT_CHANNEL)),
+		layers.MaxPooling2D((2, 2)),
+		layers.Dropout(0.5),
+		layers.Conv2D(16, 3, padding='same', activation='relu'),
+		layers.MaxPooling2D((2, 2)),
+		layers.Dropout(0.5),
 		layers.Flatten(),
 		layers.Dense(128, activation='relu'),
-		layers.Dropout(0.1),
+		layers.Dropout(0.5),
 		layers.Dense(NUM_CLASSES, activation="softmax")
 	])
 
 	model.compile(optimizer='adam',
-		loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-		metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
+		loss='sparse_categorical_crossentropy',
+		metrics=['accuracy'])
 
 	return model
 
@@ -125,8 +126,11 @@ if __name__ == "__main__":
 	# print(num_classes)
 
 	# Load the train and validation dataset
-	train_ds, train_label, train_len = file_dataset_from_directory(train_dir, "train")
-	val_ds, val_label, val_len = file_dataset_from_directory(val_dir, "validation")
+	train_ds, train_labels, train_len = file_dataset_from_directory(train_dir, "train")
+	val_ds, val_labels, val_len = file_dataset_from_directory(val_dir, "validation")
+
+	train_ds = tf.data.Dataset.from_tensor_slices((train_data, train_labels))
+	val_ds = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
 
 	# Create a basic model instance
 	model = create_model()
@@ -136,14 +140,28 @@ if __name__ == "__main__":
 	# fit model
 	his = model.fit(
 		train_ds,
-		train_label,
-		validation_data = (val_ds, val_label),
+		validation_data = val_ds,
 		epochs = epochs
 	)
 
-	# Save model
-	model.save('./my_model')
-
 	# evaluate model
-	_, acc = model.evaluate(val_ds, val_label, verbose=0)
+	_, acc = model.evaluate(val_ds, val_labels, verbose=0)
 	print('> %.3f' % (acc * 100.0))
+
+	plt.plot(his.history['accuracy'], label='acc', color='red')
+	plt.plot(his.history['val_accuracy'], label='val_acc', color='green')
+	plt.legend()
+
+	# Save model
+	model.save('weight.h5')
+
+	# Convert the model to tflite model
+	converter = tf.lite.TFLiteConverter.from_keras_model(model)
+	tflite_model = converter.convert()
+
+	# Save the tflite model
+	with open('model.tflite', 'wb') as f:
+	f.write(tflite_model)
+
+	# Convert the tflite model to binary: use command xxd -i model.tflite > model_data.cc
+
