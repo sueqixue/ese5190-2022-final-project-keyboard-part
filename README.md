@@ -6,7 +6,8 @@ The original magic_wand_ble model can only classify between 0-9. We built our ow
 Colab version of the training part: https://colab.research.google.com/drive/1JqMVoSU88o-7ZZmzwoQUtnsRRwZ0dx7c?usp=sharing
 
 The accuracy of our model after 50 epochs training:
-<img src="./keyboard_model_acc_epochs_50.png." alt="Accuracy" width="600"/>
+
+<img src="./keyboard_model_acc_epochs_50.png" alt="Accuracy" width="600"/>
 
 ## Notes
 Add this at the beginning of model.cc:
